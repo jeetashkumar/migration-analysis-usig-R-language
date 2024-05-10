@@ -1,0 +1,89 @@
+---
+title: "simulated"
+output:
+  pdf_document: default
+  html_document: default
+date: "2024-04-22"
+---
+
+
+
+```{r}
+# Load libraries
+library(tidyverse)
+library(lfe)
+library(stargazer)
+
+
+```
+
+```{r}
+# Load datasets
+simulated_covariates <- read.csv("C:/Users/Lenovo/Desktop/cancer/simulated/simulated_covariates.csv")
+simulated_rents <- read.csv("C:/Users/Lenovo/Desktop/cancer/simulated/simulated_rents.csv")
+
+
+```
+
+
+```{r}
+# Check the datasets
+View(simulated_covariates)
+View(simulated_rents)
+
+
+```
+
+
+
+```{r}
+# Join datasets by 'zipcode' using left join
+dat <- left_join(simulated_rents, simulated_covariates, by = "zipcode")
+
+
+```
+
+
+```{r}
+summary(dat)
+
+```
+
+
+```{r}
+
+# Model 1: Linear regression with 'r_vote' as predictor
+m1 <- lm(rent ~ r_vote, data = dat)
+stargazer(m1, type = "text")
+
+
+```
+
+
+```{r}
+# Model 2: Linear regression with 'r_vote' and 'migration' as predictors
+m2 <- lm(rent ~ r_vote + migration, data = dat)
+stargazer(m2, type = "text")
+
+```
+
+
+```{r}
+# Model 3: Linear regression with interaction term 'r_vote*migration'
+m3 <- lm(rent ~ r_vote + migration + r_vote*migration, data = dat)
+stargazer(m3, type = "text")
+
+
+```
+
+
+
+```{r}
+# Fixed effects model with 'location' as fixed effect
+m4 <- felm(rent ~ r_vote + urban + migration | location, data = dat)
+stargazer(m4, type = "text")
+
+
+```
+
+
